@@ -1,0 +1,102 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llm-explainability"
+version = "1.0.0"
+description = "A tool to explain LLM outputs using multiple explainability techniques"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    { name = "LLM Explainability Team" },
+]
+
+dependencies = [
+    # Core configuration and validation
+    "pydantic>=2.11.0",
+    "pydantic-settings>=2.8.0",
+    "pyyaml>=6.0.2",
+    "python-dotenv>=1.1.0",
+    "structlog>=25.1.0",
+    # LLM Providers
+    "openai>=1.82.0",
+    "anthropic>=0.49.0",
+    "ollama>=0.4.7",
+    "transformers>=4.51.0",
+    "torch>=2.6.0",
+    # Explainability libraries
+    "shap>=0.46.0",
+    "lime>=0.2.0.1",
+    "captum>=0.7.0",
+    "numpy>=2.2.0",
+    # API framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "httpx>=0.28.0",
+    "slowapi>=0.1.9",
+    # Dashboard
+    "streamlit>=1.41.0",
+    "plotly>=6.0.0",
+    # Security
+    "python-jose>=3.3.0",
+    # Utilities
+    "tenacity>=9.0.0",
+    "cachetools>=5.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "pytest-cov>=6.0.0",
+    "pytest-httpx>=0.35.0",
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+    "pre-commit>=4.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_explainability"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "SIM", "TCH"]
+ignore = ["S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+disallow_untyped_defs = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "e2e: end-to-end tests requiring real API keys",
+    "slow: tests that take significant time",
+]
+
+[tool.coverage.run]
+source = ["src/llm_explainability"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.",
+]

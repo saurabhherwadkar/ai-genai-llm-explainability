@@ -1,0 +1,19 @@
+# =============================================================================
+# Development Environment Overrides
+# =============================================================================
+# These settings override the base settings.yaml for local development.
+# =============================================================================
+
+app:
+  debug: true
+
+logging:
+  level: "debug"
+  format: "console"
+
+security:
+  rate_limit_per_minute: 120
+  api_key_required: false
+
+api:
+  workers: 1

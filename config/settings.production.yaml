@@ -1,0 +1,22 @@
+# =============================================================================
+# Production Environment Overrides
+# =============================================================================
+# These settings override the base settings.yaml for production deployment.
+# =============================================================================
+
+app:
+  debug: false
+
+logging:
+  level: "warn"
+  format: "json"
+  max_file_size_mb: 100
+
+security:
+  rate_limit_per_minute: 30
+  api_key_required: true
+  allowed_origins:
+    - "https://your-domain.com"
+
+api:
+  workers: 8

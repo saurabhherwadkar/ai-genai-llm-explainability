@@ -1,0 +1,116 @@
+# =============================================================================
+# LLM Explainability Tool - Main Configuration
+# =============================================================================
+# This file contains all application settings. Environment-specific overrides
+# are loaded from settings.{environment}.yaml files.
+# Environment variables can be referenced using ${ENV_VAR} syntax.
+# =============================================================================
+
+app:
+  name: "LLM Explainability Tool"
+  version: "1.0.0"
+  environment: "development"
+  debug: false
+
+# -----------------------------------------------------------------------------
+# Logging Configuration
+# Levels: error | warn | info | debug
+# Format: json | console
+# -----------------------------------------------------------------------------
+logging:
+  level: "info"
+  format: "json"
+  file_output: "logs/app.log"
+  max_file_size_mb: 50
+  rotation: "daily"
+  modules:
+    llm_explainability.providers: "info"
+    llm_explainability.explainers: "info"
+    llm_explainability.api: "info"
+    llm_explainability.dashboard: "info"
+
+# -----------------------------------------------------------------------------
+# LLM Provider Configuration
+# Each provider requires its own API key set via environment variable.
+# -----------------------------------------------------------------------------
+providers:
+  default: "openai"
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4o"
+    max_tokens: 4096
+    temperature: 0.0
+    timeout_seconds: 30
+    max_retries: 3
+  anthropic:
+    api_key: "${ANTHROPIC_API_KEY}"
+    model: "claude-sonnet-4-20250514"
+    max_tokens: 4096
+    temperature: 0.0
+    timeout_seconds: 30
+    max_retries: 3
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "llama3"
+    timeout_seconds: 60
+    max_retries: 2
+  huggingface:
+    model_name: "meta-llama/Meta-Llama-3-8B"
+    device: "auto"
+    load_in_8bit: true
+    max_tokens: 2048
+    timeout_seconds: 120
+
+# -----------------------------------------------------------------------------
+# Explainability Engine Configuration
+# Controls which techniques run and their parameters.
+# -----------------------------------------------------------------------------
+explainers:
+  enabled:
+    - "token_attribution"
+    - "shap_lime"
+    - "chain_of_thought"
+  token_attribution:
+    method: "logprob"
+    top_k_tokens: 20
+    normalize_scores: true
+  shap_lime:
+    method: "shap"
+    num_samples: 100
+    max_features: 15
+    batch_size: 10
+  chain_of_thought:
+    max_steps: 20
+    coherence_threshold: 0.7
+    use_llm_judge: true
+
+# -----------------------------------------------------------------------------
+# Security Configuration
+# Rate limiting, input validation, CORS settings.
+# -----------------------------------------------------------------------------
+security:
+  rate_limit_per_minute: 60
+  max_prompt_length: 10000
+  max_response_length: 50000
+  allowed_origins:
+    - "http://localhost:8501"
+    - "http://localhost:3000"
+  api_key_required: false
+  api_key_header: "X-API-Key"
+
+# -----------------------------------------------------------------------------
+# API Server Configuration
+# -----------------------------------------------------------------------------
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  cors_enabled: true
+
+# -----------------------------------------------------------------------------
+# Dashboard Configuration
+# -----------------------------------------------------------------------------
+dashboard:
+  api_base_url: "http://localhost:8000"
+  page_title: "LLM Explainability Dashboard"
+  max_history_items: 50

@@ -1,0 +1,37 @@
+# Docker Compose for LLM Explainability Tool
+# Runs the API server and Streamlit dashboard together
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - LLMX_ENVIRONMENT=production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - LLMX_API_BASE_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    command: ["streamlit", "run", "src/llm_explainability/dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    restart: unless-stopped
